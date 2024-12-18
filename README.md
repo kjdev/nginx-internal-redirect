@@ -42,7 +42,7 @@ $ : "app.conf: Create nginx configuration"
 $ docker run -p 80:80 -v $PWD/app.conf:/etc/nginx/http.d/default.conf nginx-internal-redirect
 ```
 
-> GitHub package: ghcr.io/kjdev/nginx-internal-redirect
+> GitHub package: ghcr.io/kjdev/nginx-internal-redirect/nginx
 
 Configuration
 -------------
