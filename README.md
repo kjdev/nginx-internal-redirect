@@ -1,101 +1,61 @@
-nginx-internal-redirect
-=======================
+# nginx internal_redirect Module
 
-The `ngx_http_internal_redirect`_module module allows making
-an internal redirect. In contrast to [rewriting URIs][],
-the redirection is made after checking [request][] and [connection][]
-processing limits, and [access][] limits.
+## Overview
 
-> This module is heavily inspired by the nginx original
-> [ngx_http_internal_redirect_module][].
+nginx-internal-redirect is an internal redirect dynamic module for nginx. Unlike [rewriting URIs](http://nginx.org/en/docs/http/ngx_http_rewrite_module.html), the redirection is made after checking [request](http://nginx.org/en/docs/http/ngx_http_limit_req_module.html) and [connection](http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html) processing limits, and [access](http://nginx.org/en/docs/http/ngx_http_access_module.html) limits.
 
-[rewriting URIs]: http://nginx.org/en/docs/http/ngx_http_rewrite_module.html
-[request]: http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-[connection]: http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html
-[access]: http://nginx.org/en/docs/http/ngx_http_access_module.html
-[ngx_http_internal_redirect_module]: http://nginx.org/en/docs/http/ngx_http_internal_redirect_module.html
+> This module is heavily inspired by the nginx official [ngx_http_internal_redirect_module](http://nginx.org/en/docs/http/ngx_http_internal_redirect_module.html).
 
-Installation
-------------
+**License**: MIT License
 
-### Build install
+### Key Features
 
-``` sh
-$ : "clone repository"
-$ git clone https://github.com/kjdev/nginx-internal-redirect
-$ cd nginx-internal-redirect
-$ : "get nginx source"
-$ NGINX_VERSION=1.x.x # specify nginx version
-$ wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
-$ tar -zxf nginx-${NGINX_VERSION}.tar.gz
-$ cd nginx-${NGINX_VERSION}
-$ : "build module"
-$ ./configure --add-dynamic-module=..
-$ make && make install
-```
+- **Internal Redirect**: Performs internal redirect to a regular or named location in the precontent phase
+- **Variable Support**: Supports nginx variables in the redirect URI
+- **Phase Ordering**: Redirects after limit_req / limit_conn / access checks, enabling flexible control such as post-authentication rate limiting
+- **Dynamic Module**: Can be built and loaded as an nginx dynamic module
 
-### Docker
+## Quick Start
 
-``` sh
-$ docker build -t nginx-internal-redirect .
-$ : "app.conf: Create nginx configuration"
-$ docker run -p 80:80 -v $PWD/app.conf:/etc/nginx/http.d/default.conf nginx-internal-redirect
-```
+See [docs/INSTALL.md](docs/INSTALL.md) for installation instructions.
 
-> GitHub package: ghcr.io/kjdev/nginx-internal-redirect/nginx
+### Minimal Configuration
 
-Configuration
--------------
-
-### Example
-
-```
-limit_req_zone $jwt_claim_sub zone=jwt_sub:10m rate=1r/s;
-
+```nginx
 server {
-  location / {
-    auth_jwt "realm";
-    auth_jwt_key_file key.jwk;
+    listen 80;
 
-    internal_redirect @rate_limited;
-  }
+    location / {
+        internal_redirect @backend;
+    }
 
-  location @rate_limited {
-    internal;
-
-    limit_req  zone=jwt_sub burst=10;
-    proxy_pass http://backend;
-  }
+    location @backend {
+        internal;
+        proxy_pass http://upstream;
+    }
 }
 ```
 
-The example implements [per-user][] [rate limiting][].
-Implementation without [internal_redirect][] is vulnerable to DoS attacks by
-unsigned JWTs, as normally the [limit_req][] check is performed
-[before][] [auth_jwt][] check. Using [internal_redirect][] allows reordering
-these checks.
+This configuration internally redirects requests to `/` to the named location `@backend`, which proxies to the upstream server.
 
-[per-user]: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
+## Directives
 
-[rate limiting]: http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-[internal_redirect]: #internal_redirect
-[limit_req]: http://nginx.org/en/docs/http/ngx_http_limit_req_module.html#limit_req
-[before]: http://nginx.org/en/docs/dev/development_guide.html#http_phases
-[auth_jwt]: https://github.com/kjdev/nginx-auth-jwt?#auth_jwt
+| Directive | Description | Context |
+|---|---|---|
+| `internal_redirect` | Set the URI for internal redirection | server, location |
 
-### Directives
+See [docs/DIRECTIVES.md](docs/DIRECTIVES.md) for detailed directive reference.
 
-- [internal_redirect][]
+## Related Documentation
 
-<a name="internal_redirect"></a>
-```
-Syntax: internal_redirect uri;
-Default: —
-Context: server, location
-```
+**Configuration & Operations**:
 
-Sets the URI for internal redirection of the request. It is also possible to
-use a [named location][] instead of the URI. The `uri` value can contain
-variables. If the `uri` value is empty, then the redirect will not be made.
+- [docs/DIRECTIVES.md](docs/DIRECTIVES.md): Directive Reference
+- [docs/EXAMPLES.md](docs/EXAMPLES.md): Configuration Examples
+- [docs/INSTALL.md](docs/INSTALL.md): Installation Guide
+- [docs/SECURITY.md](docs/SECURITY.md): Security Guidelines
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md): Troubleshooting Guide
 
-[named location]: http://nginx.org/en/docs/http/ngx_http_core_module.html#location_named
+**Reference**:
+
+- [docs/COMMERCIAL_COMPATIBILITY.md](docs/COMMERCIAL_COMPATIBILITY.md): Commercial Version Compatibility
