@@ -1,6 +1,15 @@
 # Changelog
 
-## [91c669c](../../commit/91c669c) - 2024-11-19
+The format is based on [Keep a Changelog](https://keepachangelog.com/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## [0.1.1] - 2026-03-31
+
+### Changed
+
+- Refactor module source to follow nginx coding style
+
+## [0.1.0] - 2024-11-19
 
 ### Added
 
