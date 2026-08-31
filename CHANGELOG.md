@@ -3,6 +3,19 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Handler execution order within `NGX_HTTP_PRECONTENT_PHASE` no longer
+  depends on `load_module` order for handlers registered through the
+  shared `nxe-phase` submodule; the module now registers via `nxe-phase`
+  at a fixed priority so it always runs after other `nxe-phase`-registered
+  authorization handlers (e.g. auth-gate, auth-cedar, auth-rbac) in the
+  same phase. Handlers registered directly with
+  `NGX_HTTP_PRECONTENT_PHASE` (bypassing `nxe-phase`) are unaffected and
+  remain subject to `load_module` order
+
 ## [0.1.1] - 2026-03-31
 
 ### Changed
