@@ -9,8 +9,8 @@ No additional dependencies are required. Only the nginx source code is needed.
 ## Build
 
 ```bash
-# Clone the repository
-git clone https://github.com/kjdev/nginx-internal-redirect.git
+# Clone the repository (with the nxe-phase submodule)
+git clone --recurse-submodules https://github.com/kjdev/nginx-internal-redirect.git
 cd nginx-internal-redirect
 
 # Get the nginx source
