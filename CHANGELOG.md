@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-03
+
 ### Fixed
 
 - Handler execution order within `NGX_HTTP_PRECONTENT_PHASE` no longer
