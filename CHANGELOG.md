@@ -5,6 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- GitHub's auto-generated release archives (source tarball/zip) exclude
+  submodules, so the `nxe-phase` submodule (used for shared PREACCESS
+  phase ordering) was missing from the 0.2.0 release archives, breaking a
+  build from that source. CI now also uploads a full source archive
+  (submodules included) as a release asset.
+
 ## [0.2.0] - 2026-09-03
 
 ### Fixed
